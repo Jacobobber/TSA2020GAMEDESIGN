@@ -33,3 +33,4 @@ public class DoPlayerDamage : MonoBehaviour
         healthFill.value = currentHealth / maxHealth;
     }
 }
+ 
