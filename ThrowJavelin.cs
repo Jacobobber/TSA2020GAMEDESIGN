@@ -13,24 +13,25 @@ public class ThrowJavelin : MonoBehaviour
 
     [SerializeField] private float throwStrength = 0;
     [SerializeField] private Camera camera;
+    [SerializeField] private GameObject character;
+    [SerializeField] private GameObject javelinReference;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rotateJavelin = new Vector3(90f, 0, 0);
+        rotateJavelin = new Vector3(-1.323f, 0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
-        javelinPosition = new Vector3(camera.transform.localPosition.x + 0.66f, camera.transform.localPosition.y - 0.2f, camera.transform.localPosition.z + 1.09f);
         javelinRotation = camera.transform.rotation.eulerAngles;
 
         throwVector = camera.transform.forward;
 
         if (throwable)
         {
-            if (Input.GetKeyDown("space"))
+            if (Input.GetMouseButtonDown(0))
             {
                 rb.useGravity = true;
                 transform.parent = null;
@@ -38,12 +39,10 @@ public class ThrowJavelin : MonoBehaviour
                 for (int i = 0; i < throwStrength * 100; i++)
                 {
                     rb.isKinematic = false;
-                    rb.AddForce(throwVector);
+                    rb.AddRelativeForce(new Vector3(0, 0, 1));
                 }
 
-                StartCoroutine(ReturnJavelin());
-
-                
+                StartCoroutine(ReturnJavelin());   
             }
         }
     }
@@ -51,8 +50,8 @@ public class ThrowJavelin : MonoBehaviour
     IEnumerator ReturnJavelin()
     {
         throwable = false;
-
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(0.5f);
+        yield return new WaitUntil(() => Input.GetMouseButtonDown(0));
 
         transform.localEulerAngles = javelinRotation;
         transform.Rotate(rotateJavelin, Space.Self);
@@ -61,8 +60,8 @@ public class ThrowJavelin : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         throwable = true;
         rb.useGravity = false;
-        transform.position = javelinPosition;
-        transform.parent = camera.transform;
+        transform.position = javelinReference.transform.position;
+        transform.parent = character.transform;
         rb.isKinematic = true;
     }
 }
